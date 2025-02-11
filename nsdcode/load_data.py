@@ -23,8 +23,14 @@ def load_transform(casenum, tfile):
         a1_data = a1_img.get_fdata()  # X x Y x Z x 3
     elif casenum in (2, 3):
         # V x 3 (decimal coordinates) or V x 1 (index)
+        offset = 0
+        if 'rh.' in tfile:
+            # determine lh offset
+            tfile_tmp = tfile.replace('rh.', 'lh.')
+            lh = nib.load(tfile_tmp)
+            offset = lh.get_fdata().max()
         a1_img = nib.load(tfile)
-        a1_data = a1_img.get_fdata()
+        a1_data = a1_img.get_fdata() + offset
         # get rid of extra dims
         a1_data = a1_data.reshape([a1_data.shape[0], -1], order='F')
     elif casenum == 4:
