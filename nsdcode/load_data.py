@@ -26,9 +26,12 @@ def load_transform(casenum, tfile):
         offset = 0
         if 'rh.' in tfile:
             # determine lh offset
-            tfile_tmp = tfile.replace('rh.', 'lh.')
-            lh = nib.load(tfile_tmp)
-            offset = lh.get_fdata().max()
+            # find the path to lh.white file
+            tfile_parts = tfile.split('/')
+            subj = tfile_parts[-3]
+            tfile_tmp = '/'.join(tfile_parts[:-4]) + f'/freesurfer/{subj}/surf/lh.white'
+            lh = nib.freesurfer.io.read_geometry(tfile_tmp)[0]
+            offset = lh.shape[0]
         a1_img = nib.load(tfile)
         a1_data = a1_img.get_fdata() + offset
         # get rid of extra dims
